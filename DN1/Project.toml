@@ -1,0 +1,10 @@
+name = "DN1"
+uuid = "1bd0a51d-6c9b-4b78-8623-09741c163dfa"
+version = "0.1.0"
+authors = ["sinja33 <sinja.kocica@gmail.com>"]
+
+[deps]
+Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+
+[compat]
+Plots = "1.41.6"
