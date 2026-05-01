@@ -8,8 +8,15 @@ Vsaka domača naloga je implementirana kot samostojen Julia paket v svojem direk
 
 ## Naloge
 
-### Domača naloga 1 (poglavje 18.1)
-Naloge s poudarkom na podatkovnih strukturah in numeričnih metodah za linearne sisteme.
+### Domača naloga 1 (poglavje 18.1) — Naravni kubični zlepek
+
+Implementacija naravnega kubičnega zlepka za interpolacijo podatkov. Zlepek je definiran po kosih — na vsakem intervalu med sosednjima točkama je kubični polinom. Pogoji zveznosti vrednosti, prvega in drugega odvoda na stikih ter naravni robni pogoj (S''(x₁) = S''(xₙ) = 0) enolično določijo koeficiente.
+
+Implementirano:
+- Tip `Zlepek` ki hrani koeficiente kubičnega zlepka
+- Funkcija `interpoliraj(x, f)` ki izračuna koeficiente z Thomasovim algoritmom
+- Funkcija `vrednost(Z, x)` ki vrne vrednost zlepka v dani točki
+- Funkcija `plot_zlepek(Z)` ki nariše graf zlepka z izmenično rdečo in modro barvo
 
 ### Domača naloga 2 (poglavje 18.2)
 Naloge s poudarkom na numeričnem računanju vrednosti funkcij na 10 decimalk natančno.
