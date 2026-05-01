@@ -24,10 +24,7 @@ Naloge s poudarkom na numeričnem računanju vrednosti funkcij na 10 decimalk na
 ### Domača naloga 3 (poglavje 18.3)
 Naloge s poudarkom na numeričnem reševanju diferencialnih enačb na 10 decimalk natančno.
 
-## Zahteve
 
-- Julia 1.x
-- Paketi so navedeni v vsakem podprojektu posebej
 
 ## Uporaba
 
@@ -38,3 +35,18 @@ include("ime_naloge/src/ime_naloge.jl")
 ```
 
 ali pa vstopite v direktorij naloge in poženete demonstracijsko skripto.
+
+## Poganjanje testov
+
+Teste za posamezno nalogo poženete v Julia REPL-u:
+
+```julia
+include("ime_naloge/test/runtests.jl")
+```
+
+ali pa z Julia testnim sistemom:
+
+```julia
+] test ime_naloge
+```
+
