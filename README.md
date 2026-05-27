@@ -10,7 +10,7 @@ Vsaka domača naloga je implementirana kot samostojen Julia paket v svojem direk
 
 ### Domača naloga 1 (poglavje 18.1) — Naravni kubični zlepek
 
-Implementacija naravnega kubičnega zlepka za interpolacijo podatkov. Zlepek je definiran po kosih — na vsakem intervalu med sosednjima točkama je kubični polinom. Pogoji zveznosti vrednosti, prvega in drugega odvoda na stikih ter naravni robni pogoj (S''(x₁) = S''(xₙ) = 0) enolično določijo koeficiente.
+Implementacija naravnega kubičnega zlepka za interpolacijo podatkov. Zlepek je definiran po kosih — na vsakem intervalu med sosednjima točkama je kubični polinom. Pogoji zveznosti vrednosti, prvega in drugega odvoda na stikih ter naravni robni pogoj ($S''(x_1) = S''(x_n) = 0$) enolično določijo koeficiente.
 
 Implementirano:
 - Tip `Zlepek` ki hrani koeficiente kubičnega zlepka
@@ -18,35 +18,51 @@ Implementirano:
 - Funkcija `vrednost(Z, x)` ki vrne vrednost zlepka v dani točki
 - Funkcija `plot_zlepek(Z)` ki nariše graf zlepka z izmenično rdečo in modro barvo
 
-### Domača naloga 2 (poglavje 18.2)
-Naloge s poudarkom na numeričnem računanju vrednosti funkcij na 10 decimalk natančno.
+### Domača naloga 2 (poglavje 18.2) — Ploščina zanke Bézierjeve krivulje
+
+Izračun ploščine zanke, ki jo omejuje Bézierjeva krivulja dana s kontrolnim poligonom osmih točk. Krivulja se seče sama s seboj in tvori zanko, katere ploščino izračunamo z Greenovo formulo.
+
+Implementirano:
+- Tip `Bezier` ki hrani kontrolne točke krivulje
+- Funkcija `tocka(B, t)` ki izračuna točko na krivulji z de Casteljaujevim algoritmom
+- Funkcija `odvod(B, t)` ki izračuna odvod krivulje analitično
+- Funkcija `integriraj_gl(f, a, b, n)` ki numerično integrira z Gauss-Legendrovo kvadraturo
+- Funkcija `poisci_zanko(B)` ki poišče presečišče krivulje z Newtonovo metodo
+- Funkcija `ploscina_zanke(B)` ki izračuna ploščino zanke z Greenovo formulo
 
 ### Domača naloga 3 (poglavje 18.3)
-Naloge s poudarkom na numeričnem reševanju diferencialnih enačb na 10 decimalk natančno.
 
-
+TBD
 
 ## Uporaba
 
-Vsako nalogo poženete z:
+Vsako nalogo aktivirate in poženete v Julia REPL-u iz direktorija naloge:
 
 ```julia
-include("ime_naloge/src/ime_naloge.jl")
+import Pkg; Pkg.activate(".")
+using ImeNaloge
 ```
 
-ali pa vstopite v direktorij naloge in poženete demonstracijsko skripto.
+ali pa poženete demonstracijsko skripto:
+
+```julia
+import Pkg; Pkg.activate(".")
+cd("demo")
+include("demo.jl")
+```
 
 ## Poganjanje testov
 
-Teste za posamezno nalogo poženete v Julia REPL-u:
+Teste za posamezno nalogo poženete v Julia REPL-u iz direktorija naloge:
 
 ```julia
-include("ime_naloge/test/runtests.jl")
+import Pkg; Pkg.activate(".")
+include("test/runtests.jl")
 ```
 
-ali pa z Julia testnim sistemom:
+ali z Julia testnim sistemom:
 
 ```julia
-] test ime_naloge
+] activate .
+] test
 ```
-

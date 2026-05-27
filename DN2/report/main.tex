@@ -1,0 +1,137 @@
+\documentclass[a4paper, twocolumn]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[slovene]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{float}
+\usepackage{caption}
+\captionsetup{skip=2pt}
+\raggedbottom
+
+\geometry{margin=2cm, top=2.5cm}
+
+\title{\textbf{Ploščina zanke Bézierjeve krivulje}}
+\author{Sinja Kočica\\
+\small Univerza v Ljubljani, Fakulteta za računalništvo in informatiko}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Opis naloge}
+
+Izračunamo ploščino zanke, ki jo omejuje Bézierjeva krivulja dana s kontrolnim poligonom osmih točk:
+\[
+(0,0),\,(1,1),\,(2,3),\,(1,4),\,(0,4),\,(-1,3),\,(0,1),\,(1,0).
+\]
+Krivulja stopnje 7 (določena z 8 kontrolnimi točkami) tvori zanko, ki omejuje zaprto območje v ravnini. Naloga zahteva natančen izračun ploščine te zanke.
+
+\section{Opis rešitve}
+
+Rešitev poteka v treh korakih: evalvacija krivulje, iskanje presečišča in izračun ploščine z numerično integracijo.
+
+\subsection{Evalvacija krivulje in De Casteljaujev algoritem}
+
+Bézierjeva krivulja stopnje $n$ je parametrična krivulja določena z $n+1$ kontrolnimi točkami $P_0, P_1, \ldots, P_n$:
+
+\[
+\mathbf{B}(t) = \sum_{k=0}^{n} \binom{n}{k} t^k (1-t)^{n-k} P_k,
+\quad t \in [0, 1].
+\]
+
+Vrednost krivulje pri danem $t$ računamo z \emph{de Casteljaujevim algoritmom}, ki rekurzivno interpolira med kontrolnimi točkami:
+
+\[
+P_k^{(r)}(t) = (1-t)\, P_k^{(r-1)}(t) + t\, P_{k+1}^{(r-1)}(t).
+\]
+
+Začnemo z $P_k^{(0)} = P_k$ in po $n$ korakih dobimo $\mathbf{B}(t) = P_0^{(n)}(t)$. Algoritem je numerično stabilnejši od neposrednega izračuna z Bernsteinovimi polinomi.
+
+Ker je Bézierjeva krivulja polinom, lahko njen odvod izračunamo analitično. Odvod je spet Bézierjeva krivulja stopnje $n-1$ z novimi kontrolnimi točkami:
+
+\[
+P'_k = n\,(P_{k+1} - P_k).
+\]
+
+S tem se izognemo numeričnim diferencam in ohranimo strojno natančnost.
+
+\subsection{Iskanje presečišča}
+
+Iščemo parametra $t_1 \neq t_2$ za katera velja $\mathbf{B}(t_1) = \mathbf{B}(t_2)$. To prevedemo na sistem dveh enačb v dveh nezankah:
+
+\[
+F(t_1, t_2) = \mathbf{B}(t_1) - \mathbf{B}(t_2) = \mathbf{0}.
+\]
+
+Postopek poteka v dveh korakih. Najprej krivuljo vzorčimo na 200 točkah in poiščemo par, ki si je najbližji. To nam da začetni približek. 
+
+Sistem $F(t_1, t_2) = 0$ rešimo z Newtonovo metodo. Na vsakem koraku izračunamo kako spremeniti $t_1$ in $t_2$, da se $F$ približa nič. Pri tem uporabimo odvode krivulje v obeh točkah.
+
+\subsection{Izračun ploščine z Greenovo formulo}
+
+Ko poznamo $t_1$ in $t_2$, ploščino zanke izračunamo z \emph{Greenovo formulo}:
+
+\[
+P = \frac{1}{2} \left|\int_{t_1}^{t_2}
+\bigl(x(t)\,\dot{y}(t) - \dot{x}(t)\,y(t)\bigr)\,dt\right|.
+\]
+
+Namesto integriranja po celotnem 2D območju zanke integriramo le vzdolž krivulje, kar je bistveno preprosteje. Integral računamo z \emph{Gauss-Legendrovo kvadraturo} s 5 točkami na vsakem podintervalu. Z $m$ točkami je kvadratura točna za polinome stopnje do $2m-1$. V našem primeru 5 točk zadosti za krivuljo stopnje 9.
+
+\section{Primeri uporabe}
+ 
+\subsection{Evalvacija krivulje}
+ 
+De Casteljaujev algoritem deluje za Bézierjeve krivulje poljubne stopnje. Spodnja slika prikazuje linearno, kvadratno in kubično krivuljo skupaj s kontrolnimi poligoni. 
+
+Za kvadratno krivuljo z kontrolnimi točkami $(0,0)$, $(1,2)$, $(2,0)$ algoritem vrne $B(0.5) = (1, 1)$, kar sovpada z analitičnim izračunom.
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{demo/bezier_evalvacija.png}
+    \caption{Evalvacija Bézierevih krivulj stopnje 1, 2 in 3.}
+\end{figure}
+ 
+\subsection{Iskanje zanke}
+ 
+Algoritem za iskanje zanke prav tako deluje na splošnih Bézierevih krivuljah. Za kvadratno krivuljo pravilno ugotovi, da zanka ne obstaja in vrne vrednost \texttt{nothing}. Za krivuljo, ki seka samo sebe, pa najde presečišče z natančnostjo $2.3 \times 10^{-16}$.
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{demo/bezier_kvadrat.png}
+    \caption{Kvadratna krivulja brez zanke.}
+\end{figure}
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{demo/bezier_petica.png}
+    \caption{Krivulja z zanko. }
+\end{figure}
+ 
+\subsection{Krivulja iz naloge}
+ 
+Krivulja s kontrolnim poligonom iz naloge se seče pri parametrih $t_1 \approx 0.0751$ in $t_2 \approx 0.9249$, kar odraža simetrijo kontrolnega poligona ($t_1 + t_2 \approx 1$). Točka presečišča je pri koordinatah $(0.500,\, 0.616)$.
+
+Ploščina zanke je:
+
+\[
+P \approx 2.2537095301723.
+\]
+
+Numerično stabilnost metode preverimo s konvergenčnim testom. Ploščino izračunamo z različnim številom podintervalov in opazujemo kako se rezultat spreminja. Ko povečevanje števila podintervalov ne spremeni več rezultata, smo dosegli konvergenco. Vrednost se stabilizira na 13 decimalkah že pri 100 podintervalih.
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{demo/bezier_naloga.png}
+    \caption{Bézierjeva krivulja iz naloge. }
+\end{figure}
+
+ 
+\end{document}
