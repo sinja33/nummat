@@ -30,9 +30,18 @@ Implementirano:
 - Funkcija `poisci_zanko(B)` ki poišče presečišče krivulje z Newtonovo metodo
 - Funkcija `ploscina_zanke(B)` ki izračuna ploščino zanke z Greenovo formulo
 
-### Domača naloga 3 (poglavje 18.3)
+### Domača naloga 3 (poglavje 18.3) — Ničle Airyjeve funkcije
 
-TBD
+Iskanje ničel Airyjeve funkcije `Ai(x)`, ki je rešitev diferencialne enačbe
+`Ai''(x) = x · Ai(x)`. Ničle so poiskane na 10 decimalk natančno.
+
+Implementirano:
+- Funkcija `magnus_korak(x, h, y)` ki naredi en korak Magnusove metode reda 4
+- Funkcija `airy_resitev(x_konec; h, x_zac)` ki izračuna mrežo vrednosti Ai(x)
+- Funkcija `airy_vrednost(x; h)` ki izračuna vrednost Ai(x) v točki x
+- Funkcija `bisekcija(f, a, b)` ki poišče ničlo z bisekcijo
+- Funkcija `newton_raphson(f, df, x0)` ki poišče ničlo z Newtonovo metodo
+- Funkcija `poisci_nicle(n)` ki poišče prvih n ničel Airyjeve funkcije
 
 ## Uporaba
 

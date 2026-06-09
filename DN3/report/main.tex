@@ -1,0 +1,154 @@
+\documentclass[a4paper, twocolumn]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[slovene]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{float}
+\usepackage{caption}
+\captionsetup{skip=2pt}
+\raggedbottom
+
+\geometry{margin=2cm, top=2.5cm}
+
+\title{\textbf{Ničle Airyjeve funkcije}}
+\author{Sinja Kočica\\
+\small Univerza v Ljubljani, Fakulteta za računalništvo in informatiko}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Opis naloge}
+
+Airyjeva funkcija $\mathrm{Ai}(x)$ je rešitev diferencialne enačbe drugega reda:
+\[
+\mathrm{Ai}''(x) = x\,\mathrm{Ai}(x),
+\]
+z začetnima pogojema pri $x = 0$:
+\[
+\mathrm{Ai}(0) = \frac{1}{3^{2/3}\,\Gamma\!\left(\tfrac{2}{3}\right)}, \quad
+\mathrm{Ai}'(0) = -\frac{1}{3^{1/3}\,\Gamma\!\left(\tfrac{1}{3}\right)}.
+\]
+Za negativne vrednosti $x$ funkcija oscilira in večkrat seka os. Naloga zahteva iskanje čim več ničel funkcije $\mathrm{Ai}(x)$ na 10 decimalk natančno, brez uporabe vgrajenih reševalnikov diferencialnih enačb.
+
+\section{Opis rešitve}
+
+Rešitev poteka v dveh korakih. Najprej z Magnusovo metodo numerično izračunamo vrednosti Airyjeve funkcije na gosti mreži točk vzdolž negativne osi, kjer ima funkcija ničle. Na mreži poiščemo intervale, kjer funkcija zamenja predznak, nato pa z metodami za iskanje ničel natančno poiščemo mesta, kjer funkcija preide skozi absciso.
+
+\subsection{Reševanje ODE z Magnusovo metodo}
+
+Enačbo drugega reda prevedemo v sistem prvega reda z uvedbo vektorja stanja $\mathbf{y}(x) = [\mathrm{Ai}(x),\, \mathrm{Ai}'(x)]^\top$:
+\[
+\mathbf{y}'(x) = A(x)\,\mathbf{y}(x), \quad
+A(x) = \begin{pmatrix} 0 & 1 \\ x & 0 \end{pmatrix}.
+\]
+Za numerično integracijo uporabimo \emph{Magnusovo metodo reda 4}. Na vsakem koraku dolžine $h$ izračunamo vrednosti matrike $A$ v dveh Gaussovih točkah $c_1$ in $c_2$, ki sta izbrani tako da je aproksimacija točna za polinome do stopnje 3:
+\[
+c_1 = x_k + \left(\tfrac{1}{2} - \tfrac{\sqrt{3}}{6}\right)h, \quad
+c_2 = x_k + \left(\tfrac{1}{2} + \tfrac{\sqrt{3}}{6}\right)h.
+\]
+Iz vrednosti $A_1 = A(c_1)$ in $A_2 = A(c_2)$ sestavimo Magnus eksponent $\sigma_{k+1}$, ki vsebuje dva člena. Prvi člen $\frac{h}{2}(A_1 + A_2)$ je uteženo povprečje matrike $A$ v obeh točkah in bi zadostoval, če bi bila matrika vzdolž koraka konstantna. Ker pa se $A(x)$ spreminja in matrično množenje ni komutativno, samo povprečje ni dovolj. Komutator $[A_1, A_2] = A_1 A_2 - A_2 A_1$ izmeri koliko se matriki $A_1$ in $A_2$ razlikujeta, drugi člen $\frac{\sqrt{3}}{12}h^2[A_1, A_2]$ pa doda potreben popravek:
+\[
+\sigma_{k+1} = \frac{h}{2}(A_1 + A_2) - \frac{\sqrt{3}}{12}h^2[A_1, A_2].
+\]
+Nov vektor stanja dobimo kot:
+\[
+\mathbf{y}_{k+1} = e^{\sigma_{k+1}}\,\mathbf{y}_k.
+\]
+Postopek ponavljamo vzdolž celotne mreže in s tem dobimo vrednosti $\mathrm{Ai}(x)$ in $\mathrm{Ai}'(x)$ v vsaki točki.
+
+\subsection{Iskanje ničel}
+
+Ko imamo vrednosti $\mathrm{Ai}(x)$ na gosti mreži, poiščemo intervale kjer funkcija zamenja predznak, tam se nahaja ničla. Za vsak tak interval nato uporabimo dve metodi:
+
+\textbf{Bisekcija} na vsakem koraku razpolovi interval $[a, b]$ in obdrži tisto polovico v kateri je ničla:
+\[
+c = \frac{a + b}{2}, \quad \text{nato } [a,c] \text{ ali } [c,b].
+\]
+Konvergira zanesljivo, a počasi. Napaka se z vsako iteracijo razpolovi.
+
+\textbf{Newtonova metoda} na vsakem koraku izračuna tangento na krivuljo in njeno presečišče z osjo vzame kot naslednji približek:
+\[
+x_{k+1} = x_k - \frac{\mathrm{Ai}(x_k)}{\mathrm{Ai}'(x_k)}.
+\]
+Vrednost odvoda $\mathrm{Ai}'(x)$ dobimo neposredno iz Magnusove metode, saj ta hkrati izračuna oba elementa vektorja $\mathbf{y}$. Newtonova metoda konvergira kvadratično. Vsak korak podvoji število pravilnih decimalk.
+
+\section{Primeri uporabe}
+
+V nadaljevanju prikazujemo delovanje implementacije na konkretnem primeru. To zajema izris Airyjeve funkcije, iskanje ničel in primerjavo metod.
+
+\subsection{Airyjeva funkcija}
+
+Slika~\ref{fig:airy} prikazuje Airyjevo funkcijo in njen odvod na intervalu $[-12, 1.5]$, izračunana z Magnusovo metodo s korakom $h = 0.005$. Za negativne $x$ funkcija oscilira, za pozitivne pa eksponentno pada proti nič. Vse ničle se nahajajo na negativni polosi.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{demo/airy_funkcija.png}
+    \caption{Airyjeva funkcija $\mathrm{Ai}(x)$ in njen odvod.}
+    \label{fig:airy}
+\end{figure}
+
+\subsection{Ničle Airyjeve funkcije}
+
+Z Magnusovo metodo in bisekcijo smo poiskali prvih 10 ničel Airyjeve funkcije. Tabela~\ref{tab:nicle} prikazuje izračunane vrednosti skupaj z napakami glede na referenčne vrednosti. Vse napake so manjše od $4 \times 10^{-11}$, kar ustreza zahtevani natančnosti $10^{-10}$.
+
+\begin{table}[H]
+\centering
+\caption{Prvih 10 ničel $\mathrm{Ai}(x)$ in napake glede na DLMF.}
+\label{tab:nicle}
+\small
+\begin{tabular}{rll}
+\hline
+$k$ & Ničla $a_k$ & Napaka \\
+\hline
+1  & $-2.3381074104$ & $1.4 \times 10^{-11}$ \\
+2  & $-4.0879494441$ & $9.7 \times 10^{-13}$ \\
+3  & $-5.5205598281$ & $4.8 \times 10^{-13}$ \\
+4  & $-6.7867080901$ & $9.9 \times 10^{-12}$ \\
+5  & $-7.9441335871$ & $4.0 \times 10^{-11}$ \\
+6  & $-9.0226508533$ & $1.4 \times 10^{-12}$ \\
+7  & $-10.0401743416$ & $1.1 \times 10^{-11}$ \\
+8  & $-11.0085243037$ & $1.4 \times 10^{-12}$ \\
+9  & $-11.9360155632$ & $1.1 \times 10^{-12}$ \\
+10 & $-12.8287767529$ & $9.1 \times 10^{-12}$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Primerjava metod za iskanje ničel}
+
+Slika~\ref{fig:konvergenca} prikazuje konvergenco bisekcije in Newtonove metode pri iskanju prve ničle. Bisekcija potrebuje okoli 35 iteracij, Newton pa le 3. V povprečju je Newton $8.8\times$ hitrejši.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{demo/konvergenca.png}
+    \caption{Konvergenca bisekcije in Newtonove metode.}
+    \label{fig:konvergenca}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{demo/primerjava_iteracij.png}
+    \caption{Število iteracij za prvih 10 ničel.}
+    \label{fig:iteracije}
+\end{figure}
+
+\subsection{Vpliv koraka na natančnost}
+
+Manjši korak $h$ v Magnusovi metodi ne pomeni vedno večje natančnosti. Pri zelo majhnem koraku se nakopičijo zaokrožitvene napake, ki začnejo prevladovati nad napako metode same. Slika~\ref{fig:napake_h} prikazuje primerjavo napak za $h = 0.0005$ in $h = 0.0001$. Pri nekaterih ničlah je manjši korak celo slabši, kar potrjuje da je $h = 0.0005$ bila dobra izbira.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{demo/napake_h.png}
+    \caption{Napake ničel za različni vrednosti koraka $h$.}
+    \label{fig:napake_h}
+\end{figure}
+
+\end{document}
